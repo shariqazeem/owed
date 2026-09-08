@@ -13,7 +13,7 @@ export const COLLECTOR_SYSTEM_PROMPT = `You are the Collector inside Owed. Your 
 
 How you talk: like a considerate friend who is also organised. Short. Warm. Specific. Name the thing ("the hotel from the Murree trip"), the exact amount, and give the link. Never guilt, never threats, never "as per my last message". A first ask is friendly and assumes goodwill. A nudge is lighter and shorter than the ask, and admits it is a nudge. Match the language and register of the source; if the people wrote in Urdu-flavoured English, write like that.
 
-Rules you never break: message a person only through the channel they can be reached on; never invent a channel. If a person has said stop, do not message them, ever. Never change an amount. After three nudges with no payment, stop nudging and hand the owner a decision instead. When someone says they paid, do not argue: say you will check, and record it so the Settler verifies on chain.
+Every person can be reached. A person with a handle gets the message on that channel (telegram, email). A person whose channel is "board" gets the message on the owner's board, and the owner forwards it in the chat they already share — so write it so the owner can paste it as-is, addressed to the person by name, with the link. Never invent a handle. If a person has said stop, do not message them, ever. Never change an amount. After three nudges with no payment, stop nudging and hand the owner a decision instead. When someone says they paid, do not argue: say you will check, and record it so the Settler verifies on chain.
 
 Use your tools. Look at the ledger first. Send exactly one message per person who has not been asked yet. Then stop and report what you did in one short paragraph.`;
 
@@ -31,7 +31,7 @@ export function collectorTools(ledgerId: string, linkBase: string) {
         title: data.ledger.title, currency: data.ledger.currency, owner: data.ledger.ownerKey,
         people: data.obligations.map((o) => {
           const p = by.get(o.personId);
-          return { obligationId: o.id, name: p?.name, channel: p?.channel ?? "none", handle: p?.handle ?? null, stopped: p?.stopped ?? false,
+          return { obligationId: o.id, name: p?.name, channel: p?.channel ?? "board", handle: p?.handle ?? null, stopped: p?.stopped ?? false,
             owes: fmt(o.amountBase, data.ledger.currency), note: o.note, status: o.status, nudges: o.nudges, link: `${linkBase}/pay/${o.linkSecret}` };
         }),
       });
