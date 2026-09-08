@@ -18,6 +18,9 @@ export const ledgers = sqliteTable("ledgers", {
   /** the agent's own reading of the source, verbatim, so the owner can check it */
   sourceSummary: text("source_summary").notNull(),
   currency: text("currency").notNull().default("USD"),
+  /** USDC per one unit of `currency`, stamped once at creation, with where it came from */
+  rateUsdcPerUnit: real("rate_usdc_per_unit").notNull().default(1),
+  rateSource: text("rate_source").notNull().default("USDC is a dollar"),
   /** where the money goes when the pot is full: "owner" | a vendor address */
   payoutTo: text("payout_to"),
   payoutLabel: text("payout_label"),
@@ -110,4 +113,3 @@ export type Ledger = typeof ledgers.$inferSelect;
 export type Person = typeof people.$inferSelect;
 export type Obligation = typeof obligations.$inferSelect;
 export type Decision = typeof decisions.$inferSelect;
-export const _unusedReal = real;

@@ -1,4 +1,3 @@
-import "server-only";
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import Database from "better-sqlite3";

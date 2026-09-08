@@ -31,8 +31,10 @@ readLedger(input)
     console.log(`  ${"total".padEnd(22)} ${String(total).padStart(10)}`);
     if (ledger.uncertainties.length) { console.log("\n  uncertain:"); for (const u of ledger.uncertainties) console.log(`   – ${u}`); }
     if (save) {
-      return import("../src/lib/db/ledgers").then(({ createLedgerFromReading, getLedger }) => {
-        const { ledgerId } = createLedgerFromReading(owner ?? "dev", input.kind === "text" ? "text" : "screenshot", ledger);
+      return Promise.all([import("../src/lib/db/ledgers"), import("../src/lib/money/rates")]).then(async ([{ createLedgerFromReading, getLedger }, { stampRate }]) => {
+        const rate = await stampRate(ledger.currency);
+        console.log(`  rate: 1 ${ledger.currency} = ${rate.usdcPerUnit} USDC · ${rate.source}`);
+        const { ledgerId } = createLedgerFromReading(owner ?? "dev", input.kind === "text" ? "text" : "screenshot", ledger, rate);
         const back = getLedger(ledgerId);
         console.log(`\n  saved ${ledgerId}: ${back?.people.length} people, ${back?.obligations.length} obligations, ${back?.events.length} event(s); first link secret ${back?.obligations[0]?.linkSecret.slice(0, 10)}…`);
       });
