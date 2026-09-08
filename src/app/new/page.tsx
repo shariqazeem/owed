@@ -20,6 +20,10 @@ export default function NewLedger() {
           <label className="nw-field nw-narrow"><span>Your name</span><input name="owner" placeholder="Sara" required /></label>
           <label className="nw-field nw-narrow"><span>Currency if unclear</span><input name="currency" defaultValue="USD" maxLength={3} /></label>
         </div>
+        <label className="nw-field">
+          <span>Where the money should go — your Arc wallet, optional</span>
+          <input name="payoutTo" placeholder="0x…" pattern="0x[0-9a-fA-F]{40}" title="An Arc address" />
+        </label>
         <button className="nw-go" type="submit">Read it and start collecting →</button>
         <p className="nw-note">Takes a few seconds. You will see exactly what the agent read before anyone is messaged.</p>
       </form>

@@ -64,6 +64,19 @@ export async function handleUpdate(update: { message?: { chat: { id: number }; t
     await sendTelegram(chatId, "Thanks. I'll check the chain and confirm here. If you have the transaction hash, paste it on your link and it confirms instantly.");
     return `paid-claim: ${person.name}`;
   }
-  await sendTelegram(chatId, "Got it. I've passed that to " + (db.select().from(schema.ledgers).where(eq(schema.ledgers.id, person.ledgerId)).get()?.ownerKey ?? "the owner") + ".");
+  // Anything else is a real reply: the Collector answers it from the ledger, in its own words.
+  const obligations = db.select().from(schema.obligations).where(eq(schema.obligations.personId, person.id)).all();
+  const o = obligations.find((x) => x.status !== "paid") ?? obligations.at(-1);
+  if (o) {
+    try {
+      const { runCollector } = await import("@/agent/collector");
+      const report = await runCollector(person.ledgerId, { linkBase: process.env.OWED_BASE_URL ?? "http://localhost:3100", mode: "reply", obligationId: o.id, text });
+      return `reply: ${person.name} → ${report.slice(0, 120)}`;
+    } catch (e) {
+      console.error("[telegram] collector reply failed:", e instanceof Error ? e.message : e);
+    }
+  }
+  const owner = db.select().from(schema.ledgers).where(eq(schema.ledgers.id, person.ledgerId)).get()?.ownerKey ?? "the owner";
+  await sendTelegram(chatId, `Got it. I've passed that to ${owner}.`);
   return `reply: ${person.name}`;
 }

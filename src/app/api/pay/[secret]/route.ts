@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { getObligationBySecret, markPaid } from "@/lib/db/ledgers";
-import { agentAccount, verifyIncoming } from "@/lib/chain/usdc";
+import { agentAddress, verifyIncoming } from "@/lib/chain/usdc";
+import { afterPayment } from "@/lib/settle/settler";
 import { arcTestnet } from "@/lib/chain/arc";
 import { toUsdcBase } from "@/lib/money/rates";
 
@@ -25,7 +26,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ secret: string
   if (!/^0x[0-9a-fA-F]{64}$/.test(txHash)) return NextResponse.json({ error: "That is not a transaction hash." }, { status: 400 });
 
   const due = toUsdcBase(obligation.amountBase, { usdcPerUnit: ledger.rateUsdcPerUnit, source: ledger.rateSource, at: 0 });
-  const agent = agentAccount().address;
+  const agent = agentAddress();
   let verified;
   try {
     verified = await verifyIncoming(txHash as `0x${string}`, agent, due);
@@ -35,5 +36,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ secret: string
   if (!verified) return NextResponse.json({ error: `No USDC transfer of at least ${Number(due) / 1e6} to ${agent} in that transaction.` }, { status: 422 });
 
   markPaid(obligation.id, ledger.id, { txHash, from: verified.from, to: verified.to, amountBase: verified.amountBase, chainId: arcTestnet.id });
+  // After the money is real: thank the person in the agent's words, and pay the owner out if the ledger is complete.
+  const linkBase = process.env.OWED_BASE_URL ?? new URL(req.url).origin;
+  after(() => afterPayment(ledger.id, obligation.id, linkBase));
   return NextResponse.json({ ok: true, txHash, amountUsdc: Number(verified.amountBase) / 1e6 });
 }

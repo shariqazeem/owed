@@ -1,15 +1,20 @@
 import { notFound } from "next/navigation";
-import { getLedger } from "@/lib/db/ledgers";
+import { getLedger, ledgerMoney } from "@/lib/db/ledgers";
+import { agentAddress } from "@/lib/chain/usdc";
+import { txUrl } from "@/lib/chain/arc";
 import "./board.css";
 
 const fmt = (base: number, cur: string) => `${cur} ${(base / 1_000_000).toLocaleString("en", { maximumFractionDigits: 2 })}`;
+const usdcFmt = (base: number) => `${(base / 1_000_000).toFixed(2)} USDC`;
 
 export const dynamic = "force-dynamic";
 
-export default async function Board({ params }: { params: Promise<{ id: string }> }) {
+export default async function Board({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ err?: string }> }) {
   const { id } = await params;
+  const { err } = await searchParams;
   const data = getLedger(id);
   if (!data) notFound();
+  const money = ledgerMoney(id);
   const { ledger, people, obligations, events, messages, decisions } = data;
   const byPerson = new Map(people.map((p) => [p.id, p]));
   const total = obligations.reduce((s, o) => s + o.amountBase, 0);
@@ -70,6 +75,33 @@ export default async function Board({ params }: { params: Promise<{ id: string }
           ))}
         </section>
       ) : null}
+
+      <section className="bd-money" aria-label="The money">
+        <h2>The money</h2>
+        <div className="bd-money-row">
+          <div><span>collected</span><b>{usdcFmt(money.collected)}</b></div>
+          <div><span>paid to you</span><b>{usdcFmt(money.paidOut)}</b></div>
+          <div><span>held by the agent</span><b>{usdcFmt(money.held)}</b></div>
+        </div>
+        <p className="bd-money-line">Payments land in the agent&apos;s wallet <code>{agentAddress()}</code>, verified on Arc before anyone is marked paid.</p>
+        {ledger.payoutTo ? (
+          <p className="bd-money-line">Goes to <code>{ledger.payoutTo}</code>{ledger.status === "settled" ? " · settled" : money.held > 0 ? " · the agent sends it the moment everyone has paid" : ""}</p>
+        ) : (
+          <form className="bd-money-form" action={`/api/ledgers/${ledger.id}/payout`} method="post">
+            <input name="to" placeholder="0x… your Arc wallet" required pattern="0x[0-9a-fA-F]{40}" title="An Arc address" spellCheck={false} />
+            <button type="submit" name="action" value="save">Send it here when everyone has paid</button>
+          </form>
+        )}
+        {ledger.payoutTo && money.held > 0 ? (
+          <form action={`/api/ledgers/${ledger.id}/payout`} method="post">
+            <button className="bd-money-send" type="submit" name="action" value="send">Send me the {usdcFmt(money.held)} held now</button>
+          </form>
+        ) : null}
+        {money.payouts.map((p) => (
+          <p className="bd-money-line" key={p.id}>paid out {usdcFmt(p.amountBase)} · <a className="bd-link" href={txUrl(p.txHash)} target="_blank" rel="noreferrer">receipt →</a></p>
+        ))}
+        {err ? <p className="bd-err">{err}</p> : null}
+      </section>
 
       {messages.length ? (
         <section className="bd-msgs" aria-label="What the agent said">

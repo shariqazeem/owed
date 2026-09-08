@@ -36,3 +36,16 @@
 .bd-dec-opts { display: flex; gap: 8px; flex-wrap: wrap; }
 .bd-dec-opts button { padding: 6px 12px; border: 1px solid var(--accent); border-radius: 999px; background: var(--surface); color: var(--accent); font-size: 13px; cursor: pointer; }
 .bd-dec-opts button:hover { background: var(--accent); color: #fff; }
+.bd-money { margin-bottom: 28px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: grid; gap: 10px; }
+.bd-money-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.bd-money-row div { display: grid; gap: 2px; }
+.bd-money-row span { font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+.bd-money-row b { font-family: var(--font-mono); font-size: 16px; font-variant-numeric: tabular-nums; }
+.bd-money-line { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-muted); }
+.bd-money-line code { font-family: var(--font-mono); font-size: 12px; word-break: break-all; }
+.bd-money-form { display: flex; gap: 8px; flex-wrap: wrap; }
+.bd-money-form input { flex: 1 1 280px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--font-mono); font-size: 12.5px; }
+.bd-money-form button, .bd-money-send { padding: 9px 14px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.bd-money-send { background: var(--surface); color: var(--accent); }
+.bd-err { margin: 0; font-size: 13px; color: #b91c1c; }
+@media (max-width: 520px) { .bd-money-row { grid-template-columns: 1fr; } }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readLedger } from "@/agent/reader";
 import { createLedgerFromReading } from "@/lib/db/ledgers";
 import { stampRate } from "@/lib/money/rates";
+import { setPayoutAddress } from "@/lib/settle/settler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,5 +34,7 @@ export async function POST(req: Request) {
 
   const rate = await stampRate(reading.ledger.currency);
   const { ledgerId } = createLedgerFromReading(owner, file instanceof File && file.size > 0 ? "screenshot" : "text", reading.ledger, rate);
+  const payoutTo = String(form.get("payoutTo") ?? "").trim();
+  if (payoutTo) setPayoutAddress(ledgerId, payoutTo);
   return NextResponse.redirect(new URL(`/l/${ledgerId}`, req.url), 303);
 }

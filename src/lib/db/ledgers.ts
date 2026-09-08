@@ -78,3 +78,11 @@ export function markPaid(obligationId: string, ledgerId: string, tx: { txHash: s
   db.update(schema.ledgers).set({ updatedAt: t }).where(eq(schema.ledgers.id, ledgerId)).run();
   return row;
 }
+
+/** USDC in minus USDC out for one ledger, in 6-dp base units, straight from the payments table. */
+export function ledgerMoney(ledgerId: string) {
+  const rows = db.select().from(schema.payments).where(eq(schema.payments.ledgerId, ledgerId)).all();
+  const collected = rows.filter((r) => r.direction === "in").reduce((s, r) => s + r.amountBase, 0);
+  const paidOut = rows.filter((r) => r.direction === "out").reduce((s, r) => s + r.amountBase, 0);
+  return { collected, paidOut, held: collected - paidOut, payouts: rows.filter((r) => r.direction === "out") };
+}

@@ -15,6 +15,13 @@ export function agentAccount() {
   return privateKeyToAccount(pk as `0x${string}`);
 }
 
+/** Where payers send money: the agent's Privy server wallet when it exists, the dev key's wallet otherwise. */
+export function agentAddress(): Address {
+  const privy = process.env.PRIVY_AGENT_WALLET_ADDRESS;
+  if (privy && /^0x[0-9a-fA-F]{40}$/.test(privy)) return privy as Address;
+  return agentAccount().address;
+}
+
 export function walletClient() {
   return createWalletClient({ account: agentAccount(), chain: arcTestnet, transport: http() });
 }

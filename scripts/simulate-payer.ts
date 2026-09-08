@@ -7,7 +7,7 @@ import { createWalletClient, http, erc20Abi, type Hex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { appendFileSync, readFileSync } from "node:fs";
 import { arcTestnet, ARC_USDC } from "../src/lib/chain/arc";
-import { publicClient, agentAccount, usdcBalance, payOut } from "../src/lib/chain/usdc";
+import { publicClient, agentAddress, usdcBalance, payOut } from "../src/lib/chain/usdc";
 
 const secret = process.argv[2];
 if (!secret) { console.error("usage: simulate-payer.ts <link secret>"); process.exit(2); }
@@ -17,7 +17,6 @@ const base = process.env.OWED_BASE_URL ?? "http://localhost:3100";
   let pk = process.env.PAYER_PRIVATE_KEY as Hex | undefined;
   if (!pk) { pk = generatePrivateKey(); appendFileSync(".env", `PAYER_PRIVATE_KEY=${pk}\n`); console.log("made a payer wallet"); }
   const payer = privateKeyToAccount(pk);
-  const agent = agentAccount();
   console.log("payer", payer.address);
 
   // what does this link ask for?
@@ -38,7 +37,7 @@ const base = process.env.OWED_BASE_URL ?? "http://localhost:3100";
 
   // the payer pays the agent exactly what the link asks
   const wallet = createWalletClient({ account: payer, chain: arcTestnet, transport: http() });
-  const hash = await wallet.writeContract({ address: ARC_USDC, abi: erc20Abi, functionName: "transfer", args: [agent.address, dueBase] });
+  const hash = await wallet.writeContract({ address: ARC_USDC, abi: erc20Abi, functionName: "transfer", args: [agentAddress(), dueBase] });
   console.log("payer paid:", hash);
   const rcpt = await publicClient.waitForTransactionReceipt({ hash });
   console.log("status:", rcpt.status, "block:", rcpt.blockNumber.toString());
