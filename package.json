@@ -6,17 +6,32 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@a2a-js/sdk": "^1.1.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.222.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.222.0",
+    "@opentelemetry/resources": "^2.11.0",
+    "@opentelemetry/sdk-metrics": "^2.11.0",
+    "@opentelemetry/sdk-trace-base": "^2.11.0",
+    "@opentelemetry/sdk-trace-node": "^2.11.0",
     "@privy-io/react-auth": "^3.40.0",
     "@privy-io/server-auth": "^1.32.5",
+    "@smithy/types": "^4.18.0",
     "@strands-agents/sdk": "^1.17.0",
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
     "lucide-react": "^1.43.0",
     "nanoid": "^6.0.1",
     "next": "15.5.19",
+    "openai": "^7.10.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "viem": "^2.56.0",
@@ -24,11 +39,16 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "15.5.19",
-    "typescript": "^5"
+    "tsx": "^4.23.13",
+    "typescript": "^5",
+    "vitest": "^5.0.0"
   }
 }
