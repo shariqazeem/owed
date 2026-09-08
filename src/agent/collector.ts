@@ -27,11 +27,12 @@ export function collectorTools(ledgerId: string, linkBase: string) {
       const data = getLedger(ledgerId);
       if (!data) return "No such ledger.";
       const by = new Map(data.people.map((p) => [p.id, p]));
+      const asked = new Set(data.messages.filter((m) => m.direction === "out" && m.intent === "ask").map((m) => m.personId));
       return JSON.stringify({
         title: data.ledger.title, currency: data.ledger.currency, owner: data.ledger.ownerKey,
         people: data.obligations.map((o) => {
           const p = by.get(o.personId);
-          return { obligationId: o.id, name: p?.name, channel: p?.channel ?? "board", handle: p?.handle ?? null, stopped: p?.stopped ?? false,
+          return { obligationId: o.id, name: p?.name, channel: p?.channel ?? "board", handle: p?.handle ?? null, stopped: p?.stopped ?? false, asked: asked.has(o.personId),
             owes: fmt(o.amountBase, data.ledger.currency), note: o.note, status: o.status, nudges: o.nudges, link: `${linkBase}/pay/${o.linkSecret}` };
         }),
       });
@@ -53,6 +54,12 @@ export function collectorTools(ledgerId: string, linkBase: string) {
       if (!p) return "No such person.";
       if (p.stopped) return `${p.name} asked us to stop. Not sent.`;
       if (o.status === "paid" && input.intent !== "thanks") return `${p.name} already paid. Not sent.`;
+      // ONE first ask per person, enforced here and not in the prompt: the agent once asked the same
+      // person twice in a minute because nothing told it the first ask had happened.
+      if (input.intent === "ask") {
+        const prior = db.select().from(schema.messages).where(eq(schema.messages.personId, p.id)).all().some((m) => m.direction === "out" && m.intent === "ask");
+        if (prior) return `${p.name} was already asked. Send a nudge later, not another ask.`;
+      }
       const channel = p.channel ?? "board";
       const t = now();
       db.insert(schema.messages).values({ id: `msg_${nanoid(10)}`, ledgerId, personId: p.id, direction: "out", channel, body: input.body, intent: input.intent, createdAt: t }).run();
