@@ -63,7 +63,10 @@ export default async function Board({ params }: { params: Promise<{ id: string }
         <section className="bd-dec">
           <h2>Needs you</h2>
           {decisions.filter((d) => !d.answer).map((d) => (
-            <div className="bd-dec-item" key={d.id}><b>{d.question}</b><span>{(JSON.parse(d.options) as string[]).join(" · ")}</span></div>
+            <form className="bd-dec-item" key={d.id} action={`/api/decisions/${d.id}`} method="post">
+              <b>{d.question}</b>
+              <span className="bd-dec-opts">{(JSON.parse(d.options) as string[]).map((opt) => <button key={opt} name="answer" value={opt} type="submit">{opt}</button>)}</span>
+            </form>
           ))}
         </section>
       ) : null}
