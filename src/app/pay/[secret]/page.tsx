@@ -31,7 +31,7 @@ export default async function Pay({ params }: { params: Promise<{ secret: string
           <PayClient secret={secret} to={agentAddress()} usdc={usdc} usdcBase={due.toString()} privy={Boolean(process.env.NEXT_PUBLIC_PRIVY_APP_ID)} />
         </OwedPrivy>
       )}
-      <p className="py-fine">This link is only for you and only for this amount. The agent reads the chain itself; nobody marks anything paid by hand. Reply "stop" to any message from Owed and it will not message you again.</p>
+      <p className="py-fine">This link is only for you and only for this amount. The agent reads the chain itself; nobody marks anything paid by hand. Reply &quot;stop&quot; to any message from Owed and it will not message you again.</p>
     </main>
   );
 }

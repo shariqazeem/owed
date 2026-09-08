@@ -9,6 +9,33 @@ const usdcFmt = (base: number) => `${(base / 1_000_000).toFixed(2)} USDC`;
 
 export const dynamic = "force-dynamic";
 
+/** The log in words a person reads, not the JSON the agents wrote for each other. */
+function describeEvent(e: { kind: string; detail: string | null }, nameOf: Map<string, string>): { text: string; tx?: string } {
+  const d = e.detail ?? "";
+  const json = (): Record<string, unknown> | null => { try { return JSON.parse(d) as Record<string, unknown>; } catch { return null; } };
+  if (e.kind === "read") {
+    const j = json();
+    const unsure = Array.isArray(j?.uncertainties) ? j.uncertainties.length : 0;
+    return { text: j ? `read ${String(j.people)} people from the source${unsure ? `, ${unsure} thing${unsure > 1 ? "s" : ""} unsure` : ""}` : "read the source" };
+  }
+  if (e.kind === "paid") {
+    const j = json();
+    const who = typeof j?.obligationId === "string" ? nameOf.get(j.obligationId) : undefined;
+    return { text: `verified on Arc: ${who ?? "someone"} paid ${usdcFmt(Number(j?.amountBase ?? 0))}`, tx: typeof j?.txHash === "string" ? j.txHash : undefined };
+  }
+  if (e.kind === "paid_out") {
+    const j = json();
+    return { text: `sent ${usdcFmt(Number(j?.amountBase ?? 0))} to ${String(j?.to ?? "").slice(0, 8)}…`, tx: typeof j?.txHash === "string" ? j.txHash : undefined };
+  }
+  if (e.kind === "payout_address") return { text: `payout address set: ${d.slice(0, 8)}…` };
+  if (e.kind === "payout_failed") return { text: `payout failed: ${d}` };
+  if (e.kind === "decision:asked") return { text: `asked you: ${d}` };
+  if (e.kind.startsWith("decision:")) return { text: `you answered: ${d}` };
+  if (e.kind.startsWith("message:")) return { text: `${e.kind.slice(8)} → ${d}` };
+  if (e.kind.startsWith("collector:")) return { text: `${e.kind.slice(10)} pass · ${d.slice(0, 160)}` };
+  return { text: d ? `${e.kind} · ${d.slice(0, 120)}` : e.kind };
+}
+
 export default async function Board({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ err?: string }> }) {
   const { id } = await params;
   const { err } = await searchParams;
@@ -25,6 +52,7 @@ export default async function Board({ params, searchParams }: { params: Promise<
   const lastAsk = (personId: string) => messages.filter((m) => m.personId === personId && m.direction === "out").at(-1);
   const waHref = (personId: string) => { const m = lastAsk(personId); return m ? `https://wa.me/?text=${encodeURIComponent(m.body)}` : null; };
   const uncertainties: string[] = read?.detail ? (JSON.parse(read.detail).uncertainties ?? []) : [];
+  const nameOf = new Map(obligations.map((o) => [o.id, byPerson.get(o.personId)?.name ?? "?"]));
 
   return (
     <main className="bd">
@@ -124,7 +152,17 @@ export default async function Board({ params, searchParams }: { params: Promise<
 
       <section className="bd-log" aria-label="What the agent did">
         <h2>What the agent did</h2>
-        <ol>{events.map((e) => <li key={e.id}><span className="bd-actor">{e.actor}</span> {e.kind}{e.detail ? <span className="bd-detail"> · {e.detail.slice(0, 120)}</span> : null}</li>)}</ol>
+        <ol>
+          {events.map((e) => {
+            const { text, tx } = describeEvent(e, nameOf);
+            return (
+              <li key={e.id}>
+                <span className="bd-actor">{e.actor}</span> {text}
+                {tx ? <> · <a className="bd-link" href={txUrl(tx)} target="_blank" rel="noreferrer">receipt →</a></> : null}
+              </li>
+            );
+          })}
+        </ol>
       </section>
     </main>
   );
