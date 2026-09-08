@@ -21,7 +21,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   const t = Math.floor(Date.now() / 1000);
   db.update(schema.decisions).set({ answer, answeredAt: t }).where(eq(schema.decisions.id, id)).run();
   if (d.context) {
-    const status = /write.?off/i.test(answer) ? "written_off" : /dispute/i.test(answer) ? "disputed" : null;
+    // the owner's words decide the state: forgiving it or accepting an off-chain settlement closes it; "still owed" keeps it open
+    const status = /write.?off|settled|drop it|forgive|let it go|paid in cash/i.test(answer) ? "written_off" : /dispute|contest/i.test(answer) ? "disputed" : null;
     if (status) db.update(schema.obligations).set({ status }).where(eq(schema.obligations.id, d.context)).run();
   }
   db.insert(schema.events).values({ ledgerId: d.ledgerId, kind: `decision:${d.kind}`, actor: "owner", detail: answer, createdAt: t }).run();
