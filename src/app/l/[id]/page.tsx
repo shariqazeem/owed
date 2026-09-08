@@ -16,6 +16,9 @@ export default async function Board({ params }: { params: Promise<{ id: string }
   const paid = obligations.filter((o) => o.status === "paid").reduce((s, o) => s + o.amountBase, 0);
   const pct = total ? Math.round((paid / total) * 100) : 0;
   const read = events.find((e) => e.kind === "read");
+  const askedFor = new Set(messages.filter((m) => m.direction === "out" && m.intent === "ask").map((m) => m.personId));
+  const lastAsk = (personId: string) => messages.filter((m) => m.personId === personId && m.direction === "out").at(-1);
+  const waHref = (personId: string) => { const m = lastAsk(personId); return m ? `https://wa.me/?text=${encodeURIComponent(m.body)}` : null; };
   const uncertainties: string[] = read?.detail ? (JSON.parse(read.detail).uncertainties ?? []) : [];
 
   return (
@@ -40,11 +43,16 @@ export default async function Board({ params }: { params: Promise<{ id: string }
               <div className="bd-person-main">
                 <b>{p?.name ?? "?"}</b>
                 <span className="bd-note">{o.note ?? ""}</span>
-                {o.status !== "paid" ? <a className="bd-link" href={`/pay/${o.linkSecret}`}>their link →</a> : null}
+                {o.status !== "paid" ? (
+                  <span className="bd-links">
+                    <a className="bd-link" href={`/pay/${o.linkSecret}`}>their link →</a>
+                    {waHref(o.personId) ? <a className="bd-link" href={waHref(o.personId)!} target="_blank" rel="noreferrer">forward on WhatsApp →</a> : null}
+                  </span>
+                ) : null}
               </div>
               <div className="bd-person-side">
                 <span className="bd-amt">{fmt(o.amountBase, ledger.currency)}</span>
-                <span className={`bd-pill is-${o.status}`}>{o.status === "owed" ? (o.nudges ? `nudged ×${o.nudges}` : "not asked yet") : o.status.replace("_", " ")}</span>
+                <span className={`bd-pill is-${o.status}`}>{o.status === "owed" ? (o.nudges ? `nudged ×${o.nudges}` : askedFor.has(o.personId) ? "asked" : "not asked yet") : o.status.replace("_", " ")}</span>
               </div>
             </div>
           );

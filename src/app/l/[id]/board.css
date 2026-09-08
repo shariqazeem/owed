@@ -32,3 +32,4 @@
 .bd-msg.is-in { background: var(--bg); }
 .bd-msg-meta { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-faint); margin-bottom: 4px; }
 .bd-msg p { margin: 0; font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; }
+.bd-links { display: flex; gap: 12px; }
