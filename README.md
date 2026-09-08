@@ -45,7 +45,7 @@ flowchart LR
 - `src/agent/collector.ts` — the Collector and its tools. `runCollector(ledgerId, { mode })` with `ask`, `nudge`, `thanks`, `reply`.
 - `src/lib/settle/settler.ts` — the Settler's outgoing leg; `src/app/api/pay/[secret]` — the incoming leg.
 - `src/lib/chain/usdc.ts` — Arc: verify a transfer, scan for transfers, pay out.
-- `src/lib/privy/` — the agent's server wallet (created once, key in Privy's TEE, Owed holds the wallet id and signs through `/wallets/{id}/rpc`).
+- `src/lib/privy/` — the agent's server wallet (created once, key in Privy's TEE, Owed holds the wallet id and signs through `/wallets/{id}/rpc`). A Privy **policy** is attached to it (`scripts/privy-policy.ts`): the enclave signs USDC `transfer`s on Arc and nothing else, capped per transaction. Nothing a model says can widen that.
 - `src/lib/channels/telegram.ts` — deep-link connect, `stop`, `paid`, and free-text replies answered by the Collector.
 - `src/agent/model.ts` — the one place a model is chosen: Amazon Bedrock when `BEDROCK_MODEL_ID` is set, any OpenAI-compatible endpoint otherwise.
 
@@ -80,6 +80,7 @@ Arc testnet, chain id 5042002. USDC is the native gas token and also answers as 
 ## What is proven
 
 - A payer's wallet sent exactly 1 USDC to the agent on Arc; the Settler verified it through the live API and marked the obligation paid: [`0x324e6142…7753`](https://testnet.arcscan.app/tx/0x324e6142479b4dceb474525f325364dcb737ad4fdf6f33dfae866ac15267b753).
+- The agent's Privy server wallet `0xb54821D9…55a39` paid out under its policy — Privy signed, Owed broadcast: [`0x72da6fdc…258c`](https://testnet.arcscan.app/tx/0x72da6fdc2b2e15fef9c47d3c1df3b5af07d011e4cda0170ac3247ba0902b258c). The same wallet asked to sign a plain value transfer to another address was refused: `policy_violation` (`scripts/privy-policy.ts check`).
 - The Reader has read a typed list, a pasted group chat, a rendered bill-split screenshot and an invoice (`fixtures/`), in PKR, USD and JMD, and refused to list the owner as a debtor.
 - The Collector wrote one ask per person, delivered on Telegram where a chat was connected and on the board otherwise; asking the same person twice is refused in code.
 
