@@ -29,7 +29,7 @@ export function createLedgerFromReading(ownerKey: string, sourceKind: string, r:
       .values({
         id: obligationId, ledgerId, personId, amountBase: toBase(p.amount), note: p.note,
         dueAt: p.dueAt ? Math.floor(Date.parse(p.dueAt) / 1000) || null : null,
-        linkSecret: `0x${randomBytes(32).toString("hex")}`, createdAt: t,
+        linkSecret: `0x${randomBytes(32).toString("hex")}`, startCode: `o${nanoid(8)}`, createdAt: t,
       })
       .run();
     return { personId, obligationId, name: p.name, amountBase: toBase(p.amount) };

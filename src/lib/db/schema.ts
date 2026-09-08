@@ -38,6 +38,8 @@ export const people = sqliteTable("people", {
   handle: text("handle"),
   /** the person can say stop; the agent then never messages them again on this ledger */
   stopped: integer("stopped", { mode: "boolean" }).notNull().default(false),
+  /** learned when they tap the bot's deep link; the agent can only message a chat that opened first */
+  telegramChatId: text("telegram_chat_id"),
   createdAt: integer("created_at").notNull(),
 });
 
@@ -52,6 +54,8 @@ export const obligations = sqliteTable("obligations", {
   status: text("status").notNull().default("owed"),
   /** the one-time payment link's secret, shown only to the person it is for */
   linkSecret: text("link_secret").notNull(),
+  /** short code in the Telegram deep link — never the bearer secret */
+  startCode: text("start_code").notNull().default(""),
   paidAt: integer("paid_at"),
   paidTx: text("paid_tx"),
   nudges: integer("nudges").notNull().default(0),
