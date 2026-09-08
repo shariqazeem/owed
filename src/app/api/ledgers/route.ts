@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { absolute } from "@/lib/url";
 import { readLedger } from "@/agent/reader";
 import { createLedgerFromReading } from "@/lib/db/ledgers";
 import { stampRate } from "@/lib/money/rates";
@@ -36,5 +37,5 @@ export async function POST(req: Request) {
   const { ledgerId } = createLedgerFromReading(owner, file instanceof File && file.size > 0 ? "screenshot" : "text", reading.ledger, rate);
   const payoutTo = String(form.get("payoutTo") ?? "").trim();
   if (payoutTo) setPayoutAddress(ledgerId, payoutTo);
-  return NextResponse.redirect(new URL(`/l/${ledgerId}`, req.url), 303);
+  return NextResponse.redirect(absolute(`/l/${ledgerId}`, req), 303);
 }

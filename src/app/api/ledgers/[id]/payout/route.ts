@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { absolute } from "@/lib/url";
 import { payOutLedger, setPayoutAddress } from "@/lib/settle/settler";
 
 export const runtime = "nodejs";
@@ -11,7 +12,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   const form = await req.formData();
   const to = String(form.get("to") ?? "").trim();
   const action = String(form.get("action") ?? "save");
-  const back = (err?: string) => NextResponse.redirect(new URL(`/l/${id}${err ? `?err=${encodeURIComponent(err)}` : ""}`, req.url), 303);
+  const back = (err?: string) => NextResponse.redirect(absolute(`/l/${id}${err ? `?err=${encodeURIComponent(err)}` : ""}`, req), 303);
   if (to) {
     const r = setPayoutAddress(id, to);
     if (!r.ok) return back(r.error);

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { absolute } from "@/lib/url";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
@@ -26,5 +27,5 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     if (status) db.update(schema.obligations).set({ status }).where(eq(schema.obligations.id, d.context)).run();
   }
   db.insert(schema.events).values({ ledgerId: d.ledgerId, kind: `decision:${d.kind}`, actor: "owner", detail: answer, createdAt: t }).run();
-  return NextResponse.redirect(new URL(`/l/${d.ledgerId}`, req.url), 303);
+  return NextResponse.redirect(absolute(`/l/${d.ledgerId}`, req), 303);
 }
