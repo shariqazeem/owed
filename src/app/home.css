@@ -1,0 +1,44 @@
+.hm { max-width: 960px; margin: 0 auto; padding: 24px 24px 80px; }
+.hm-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 48px; }
+.hm-mark { font-weight: 700; letter-spacing: -0.01em; font-size: 18px; }
+.hm-nav { display: flex; gap: 20px; font-size: 14px; }
+.hm-nav a { color: var(--ink-muted); }
+.hm-nav a:last-child { color: var(--accent); font-weight: 600; }
+.hm-kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+.hm-hero h1 { font-size: clamp(40px, 7vw, 68px); line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 20px; max-width: 12ch; }
+.hm-lede { font-size: 19px; line-height: 1.5; color: var(--ink-muted); max-width: 640px; margin: 0 0 28px; }
+.hm-cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hm-go { display: inline-block; padding: 13px 20px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 600; font-size: 15px; }
+.hm-go:hover { filter: brightness(0.94); }
+.hm-cta-note { font-size: 13.5px; color: var(--ink-faint); }
+.hm-rail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 72px 0 64px; }
+.hm-step { padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface, #fff); display: grid; gap: 8px; align-content: start; }
+.hm-n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+.hm-step h2 { font-size: 18px; letter-spacing: -0.01em; margin: 4px 0 0; }
+.hm-step p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-muted); }
+.hm-step .hm-never { color: var(--ink); font-size: 13.5px; padding-top: 6px; border-top: 1px dashed var(--border); }
+.hm-sample h2, .hm-who h2, .hm-pay h2 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px; }
+.hm-board { padding: 18px 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface, #fff); display: grid; gap: 8px; }
+.hm-board-title { margin: 0 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.hm-board-title span { font-family: var(--font-mono); font-size: 12px; font-weight: 400; color: var(--ink-faint); letter-spacing: 0; }
+.hm-row { display: grid; grid-template-columns: 90px 1fr auto auto; gap: 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+.hm-row.is-paid { border-color: #bfe3c8; }
+.hm-row-note { font-size: 13px; color: var(--ink-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hm-row em { font-style: normal; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+.hm-pill { font-style: normal; font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: var(--surface-2, #eeece6); color: var(--ink-muted); }
+.hm-pill.is-paid { background: #e6f4ea; color: #15803d; }
+.hm-msg { margin-top: 6px; padding: 12px 14px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); }
+.hm-msg-meta { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-faint); margin-bottom: 4px; }
+.hm-msg p { margin: 0; font-size: 14.5px; line-height: 1.5; }
+.hm-board-fine { margin: 6px 0 0; font-size: 13px; color: var(--ink-faint); line-height: 1.5; }
+.hm-pay { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 64px 0; }
+.hm-pay p, .hm-who p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--ink-muted); max-width: 600px; }
+.hm-who { margin: 0 0 64px; display: grid; gap: 18px; justify-items: start; }
+.hm-go-2 { margin-top: 4px; }
+.hm-foot { padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-faint); }
+.hm-foot p { margin: 0; }
+@media (max-width: 720px) {
+  .hm-rail, .hm-pay { grid-template-columns: 1fr; }
+  .hm-row { grid-template-columns: 1fr auto; }
+  .hm-row-note { grid-column: 1 / -1; }
+}
