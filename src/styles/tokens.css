@@ -1,0 +1,179 @@
+/**
+ * tokens.css — the SINGLE design-token source of truth for every Sage surface.
+ * "Receipt minimalism": premium light, one terracotta accent, green/red reserved
+ * strictly for money-outcome semantics. Imported once in the root layout; every
+ * per-surface stylesheet aliases its local vars to these (no palette re-declaration).
+ *
+ * Fonts (--font-sans / --font-mono) are set on <html> by next/font in layout.tsx.
+ */
+
+:root {
+  /* clearance under the app shell's floating mode pill (fixed, bottom ≈ 61px) — consumed by
+     shelled pages whose own top padding is shallower; scoped on html[data-app-shell="on"] so
+     the same page class keeps its standalone spacing when unshelled (e.g. .spp on /proof). */
+  --pill-clear: 4.75rem;
+  /* ── type families — defined ONCE, here (were in globals.css) ───── */
+  /* The inner var() fallbacks keep `font-family` valid when a next/font variable is
+   * missing: a bare undefined var() invalidates the whole declaration and the browser
+   * drops to serif. layout.tsx puts --font-inter / --font-jetbrains-mono on <html>. */
+  --font-sans: var(--font-inter, ui-sans-serif), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono, ui-monospace), SFMono-Regular, "JetBrains Mono", monospace;
+
+  /* ── surface + text ─────────────────────────────────────────────── */
+  --bg: #fbfbf9;            /* paper */
+  --surface: #ffffff;      /* raised card */
+  --ink: #1a1d21;          /* primary text (app surfaces) */
+  /* THE SECOND INK, named honestly. The public reading surfaces (landing, docs, long-form
+   * content) run a WARMER ink than the app chrome — a deliberate P24 choice, not drift. It
+   * was declared identically in three separate files; it lives here now, and those files
+   * alias it, so "warm ink" has exactly one definition. */
+  --ink-warm: #171715;
+  --ink-muted: #565c64;    /* secondary text */
+  --ink-faint: #8b9098;    /* tertiary / captions */
+
+  /* ── brand accent (ALL interactive/brand elements) ──────────────── */
+  --accent: #c2410c;       /* terracotta */
+  --accent-soft: #fdf1ea;  /* subtle terracotta wash (hover/selected) */
+  --accent-ink: #ffffff;   /* text on an accent fill */
+  --accent-strong: #9a3412;/* darker terracotta for hover / active */
+
+  /* ── money-outcome semantics ONLY (never generic accents) ───────── */
+  --ok: #15803d;           /* paid / verified / success */
+  --ok-soft: #eef6f0;
+  --err: #dc2626;          /* rejected / failed / blocked */
+  --err-soft: #fdeeee;
+  --warn: #b45309;         /* caution (held-for-review, low balance) */
+  --warn-soft: #fbf1e6;
+  /* tinted callout rings — a shade darker than each matching *-soft fill */
+  --accent-border: #f3d7c6;
+  --ok-border: #c3e3cd;
+  --err-border: #f2cccc;
+  --warn-border: #ecdcb4;
+
+  /* ── lines + elevation ──────────────────────────────────────────── */
+  --border: #e9e6df;
+  --border-strong: #d8d3c9;
+  --shadow-sm: 0 1px 2px rgba(26, 29, 33, 0.05);
+  --shadow-md: 0 6px 24px rgba(26, 29, 33, 0.08);
+  /* P24 — landing elevations + scrims (were raw rgba in cinematic.css; tokenized here at
+   * identical values, so no visual shift). Ink = the --ink channel; cta = a darker ink. */
+  --shadow-card: 0 12px 30px -18px rgba(26, 29, 33, 0.28);
+  --shadow-card-hover: 0 16px 34px -18px rgba(26, 29, 33, 0.24);
+  --shadow-float: 0 20px 48px -26px rgba(26, 29, 33, 0.3);
+  --shadow-hero: 0 20px 50px -20px rgba(26, 29, 33, 0.5);
+  --shadow-cta: 0 8px 22px -10px rgba(20, 22, 26, 0.6);
+  --shadow-cta-hover: 0 12px 28px -10px rgba(20, 22, 26, 0.66);
+  --shadow-ok-glow: 0 12px 26px -16px rgba(21, 128, 61, 0.45);
+  --shadow-on-dark: 0 12px 30px -14px rgba(0, 0, 0, 0.5);
+  --scrim-header: rgba(251, 251, 249, 0.82);
+
+  /* ── inverse: the one dark surface (landing close, wallet hero) ──── */
+  --ink-inverse: #f3f3f1;            /* primary light text on dark */
+  --ink-inverse-muted: #b3b5b9;      /* muted light text on dark */
+  --border-inverse: #2c3138;         /* hairline on dark */
+  --surface-inverse-raised: #26292e; /* elevated card on dark */
+
+  /* ── radii (6/10/16, + pill for status chips only) ──────────────── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* ── spacing scale — 8pt rhythm (4 is the half-step) ────────────── */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  /* P24 — larger steps for landing whitespace ("premium = space"). Strict 8pt. */
+  --s-8: 64px;
+  --s-9: 80px;
+  --s-10: 96px;
+  --s-11: 128px;
+  --s-12: 160px;
+
+  /* ── P24 DISPLAY TYPE SCALE — the single source for P24–P26 ──────── */
+  /* Sizes are fluid (clamp); tracking TIGHTENS as size grows (display type wants
+   * negative tracking, body wants none). Each role = size + line-height + tracking. */
+  --fs-display: clamp(2.6rem, 1.3rem + 5.4vw, 4.4rem);
+  --lh-display: 1.015;
+  --tracking-display: -0.035em;
+
+  --fs-h1: clamp(2rem, 1.35rem + 2.7vw, 3.1rem);
+  --lh-h1: 1.06;
+  --tracking-h1: -0.025em;
+
+  --fs-h2: clamp(1.45rem, 1.15rem + 1.5vw, 2.1rem);
+  --lh-h2: 1.15;
+  --tracking-h2: -0.016em;
+
+  --fs-lead: clamp(1.12rem, 1rem + 0.6vw, 1.35rem); /* hero sub / lead paragraph */
+  --lh-lead: 1.5;
+  --tracking-lead: -0.011em;
+
+  --fs-body: 1rem;
+  --lh-body: 1.6;
+  --tracking-body: 0em;
+
+  --fs-mono: 0.8125rem; /* data, labels, addresses */
+  --tracking-mono: 0.02em;
+
+  /* ── P24 MOTION VOCABULARY — 3 durations, 2 easings (one spring) ─── */
+  --dur-1: 160ms; /* micro: hover, tap, small state */
+  --dur-2: 320ms; /* standard: reveal, fade, slide */
+  --dur-3: 640ms; /* expressive: hero stagger, count-up */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* firm deceleration */
+  --ease-spring: cubic-bezier(0.34, 1.42, 0.5, 1); /* gentle overshoot */
+}
+
+/* prefers-reduced-motion COLLAPSES everything: every motion built on the vocabulary
+ * above uses these duration tokens, so zeroing them makes transitions + animations
+ * instant (no fork, no per-component media query). New P24–P26 motion MUST use these. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0.01ms;
+    --dur-2: 0.01ms;
+    --dur-3: 0.01ms;
+  }
+}
+
+/**
+ * BASE — the product's only global element rules, all expressed in tokens.
+ *
+ * These used to be a Tailwind `@layer base` block in globals.css, written against a dark
+ * palette for the retired product. That palette is gone (2026-08-28); these are its live
+ * effects, restated in plain CSS against the real tokens. Tailwind's preflight still
+ * provides the reset — see globals.css.
+ */
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* tabular numerals everywhere: amounts and hashes have to align in a column */
+  font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
+}
+
+/* The reset leaves border-color at `currentColor`; Sage's hairline is the token. Every
+ * `border: 1px solid` in the product that names no colour depends on this — it was
+ * previously `* { @apply border-border }`, which resolved to this same value. */
+* {
+  border-color: var(--border);
+}
+
+/* Selection was inherited from the dark product: near-white on near-black, which on paper
+ * rendered as an almost invisible highlight. Inverted to the ink/paper pair. */
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
