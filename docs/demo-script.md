@@ -10,12 +10,13 @@ Two browsers side by side: **A** is you (the owner), **B** is a friend (a privat
 2. B: a private window at the same site, nothing open yet.
 3. Clipboard: the chat below. You paste it in beat 2.
 4. Your phone's email open (Privy sends a code when you sign in). Or use Google.
-5. Fund the friend's wallet AFTER it appears in beat 5 — keep `scripts/privy-payout.ts` ready in a
-   terminal: `npx tsx --env-file=.env scripts/privy-payout.ts <address> 30` (or faucet.circle.com).
-   Do it off camera; cut.
+5. Testnet USDC is scarce (the dev wallet holds ~14, the agent's Privy wallet ~5; faucet.circle.com
+   gives more, one captcha at a time). That is why the chat below is a dinner, not a hotel: 800 each
+   is 2.88 USDC. Fund the friend's wallet AFTER it appears in beat 5, off camera, from a terminal:
+   `npx tsx --env-file=.env scripts/fund.ts <address> 3.2` (from the dev wallet). Cut, then resume.
 
 ```
-Maryam: hotel in Murree was 40,000 for the 5 of us, 8,000 each — I paid it
+Maryam: dinner at Butt Karahi was 4,000 for the 5 of us, 800 each — I paid it
 Ali: cool, will send
 Bilal: ok
 Hina: can I pay Friday?
@@ -43,7 +44,7 @@ that's where the money will land.
 
 ## BEAT 3 · 0:40 → 1:05 · A — the review
 
-**SAY** › It read the chat. Four people owe me 8,000 each, including Zain, who only sent a thumbs
+**SAY** › It read the chat. Four people owe me 800 each, including Zain, who only sent a thumbs
 up. Nobody has been messaged yet. I check it — fix anything — and I say go.
 
 **DO** › Rest on the rows, then on "I was not sure about". Press **Start collecting**.
@@ -70,7 +71,7 @@ agent stamped. And he can just ask.
 **SAY** › It answers from the ledger. Now he pays. An email is enough — the wallet is made for him.
 
 **DO** › Pay → sign in as the friend (second email) → the wallet appears with its balance. ⏸ CUT if
-you need to fund it. Resume: **Pay 28.83 USDC now** → confirm → "Sent. The agent is reading the
+you need to fund it. Resume: **Pay 2.88 USDC now** → confirm → "Sent. The agent is reading the
 chain…" → **Paid, and verified on Arc.** → receipt.
 
 **SAY** › The agent read the chain itself. Nobody marked that paid. Here's the receipt, with the
@@ -102,8 +103,8 @@ anyone for anything.
 
 | you say | on screen |
 | --- | --- |
-| 8,000 each, four people | the review rows, the board |
-| 28.83 USDC at the stamped rate | Ali's page (`1 PKR = 0.0036… USDC, open.er-api.com`) |
+| 800 each, four people | the review rows, the board |
+| 2.88 USDC at the stamped rate | Ali's page (`1 PKR = 0.0036… USDC, open.er-api.com`) |
 | the receipt, with the transaction | `/receipt/<tx>` → Arcscan |
 
 ## Never on screen
