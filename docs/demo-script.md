@@ -15,12 +15,15 @@ Two browsers side by side: **A** is you (the owner), **B** is a friend (a privat
    Do it off camera; cut.
 
 ```
-Maryam: hotel in Murree was 48,000 for 6 of us, 8,000 each
+Maryam: hotel in Murree was 40,000 for the 5 of us, 8,000 each — I paid it
 Ali: cool, will send
-Zain: I paid the jeep, 9,000, so 1,500 each on top
 Bilal: ok
 Hina: can I pay Friday?
+Zain: 👍
 ```
+
+(Keep it unambiguous on camera: one payer, one thing, four people who owe. The two-payer chat is a
+great review-step story but the Reader reads it differently one run in three; not for a live take.)
 
 ## BEAT 1 · 0:00 → 0:12 · CAMERA
 
@@ -40,9 +43,8 @@ that's where the money will land.
 
 ## BEAT 3 · 0:40 → 1:05 · A — the review
 
-**SAY** › It read the chat. Three people owe me 8,000. It noticed Zain paid the jeep, and that's
-Zain's money, not mine, so it kept it off my ledger and told me why. Nobody has been messaged yet.
-I check it, and I say go.
+**SAY** › It read the chat. Four people owe me 8,000 each, including Zain, who only sent a thumbs
+up. Nobody has been messaged yet. I check it — fix anything — and I say go.
 
 **DO** › Rest on the rows, then on "I was not sure about". Press **Start collecting**.
 
@@ -100,7 +102,7 @@ anyone for anything.
 
 | you say | on screen |
 | --- | --- |
-| 8,000 each, three people | the review rows, the board |
+| 8,000 each, four people | the review rows, the board |
 | 28.83 USDC at the stamped rate | Ali's page (`1 PKR = 0.0036… USDC, open.er-api.com`) |
 | the receipt, with the transaction | `/receipt/<tx>` → Arcscan |
 
