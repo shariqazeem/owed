@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { canView, currentOwner } from "@/lib/auth/session";
 import { absolute } from "@/lib/url";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
@@ -15,6 +16,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   const d = db.select().from(schema.decisions).where(eq(schema.decisions.id, id)).get();
   if (!d) return NextResponse.json({ error: "No such decision." }, { status: 404 });
   if (d.answer) return NextResponse.json({ ok: true, already: d.answer });
+  const led = db.select().from(schema.ledgers).where(eq(schema.ledgers.id, d.ledgerId)).get();
+  if (!led || !canView(led.ownerKey, await currentOwner())) return NextResponse.json({ error: "Not yours." }, { status: 404 });
   const form = await req.formData();
   const answer = String(form.get("answer") ?? "").trim();
   const options = JSON.parse(d.options) as string[];

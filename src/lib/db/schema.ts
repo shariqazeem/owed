@@ -12,6 +12,8 @@ import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const ledgers = sqliteTable("ledgers", {
   id: text("id").primaryKey(),
   ownerKey: text("owner_key").notNull(),
+  /** how the owner is named to the people who owe them ("Shariq"); ownerKey is their identity */
+  ownerName: text("owner_name"),
   title: text("title").notNull(),
   /** what the owner dropped on it: "screenshot" | "sheet" | "text" | "invoice" */
   sourceKind: text("source_kind").notNull(),

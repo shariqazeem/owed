@@ -9,14 +9,14 @@ const now = () => Math.floor(Date.now() / 1000);
 const toBase = (amount: number) => Math.round(amount * 1_000_000);
 
 /** Persist what the Reader read. Money is converted to base units HERE, in code, never by the model. */
-export function createLedgerFromReading(ownerKey: string, sourceKind: string, r: ReadLedger, rate: StampedRate) {
+export function createLedgerFromReading(owner: { key: string; name: string }, sourceKind: string, r: ReadLedger, rate: StampedRate) {
   const t = now();
   const ledgerId = `led_${nanoid(10)}`;
   db.insert(schema.ledgers)
     .values({
-      id: ledgerId, ownerKey, title: r.title, sourceKind, sourceSummary: r.sourceSummary,
+      id: ledgerId, ownerKey: owner.key, ownerName: owner.name, title: r.title, sourceKind, sourceSummary: r.sourceSummary,
       currency: r.currency.toUpperCase(), rateUsdcPerUnit: rate.usdcPerUnit, rateSource: rate.source,
-      payoutLabel: r.payoutLabel, status: "collecting", createdAt: t, updatedAt: t,
+      payoutLabel: r.payoutLabel, status: "draft", createdAt: t, updatedAt: t,
     })
     .run();
   const rows = r.people.map((p) => {
@@ -85,4 +85,9 @@ export function ledgerMoney(ledgerId: string) {
   const collected = rows.filter((r) => r.direction === "in").reduce((s, r) => s + r.amountBase, 0);
   const paidOut = rows.filter((r) => r.direction === "out").reduce((s, r) => s + r.amountBase, 0);
   return { collected, paidOut, held: collected - paidOut, payouts: rows.filter((r) => r.direction === "out") };
+}
+
+/** How the owner is named to the people who owe them. Ledgers from before identities carry the name as the key. */
+export function ownerDisplay(l: { ownerName: string | null; ownerKey: string }): string {
+  return l.ownerName ?? (l.ownerKey.startsWith("anon:") || l.ownerKey.startsWith("did:") ? "the owner" : l.ownerKey);
 }

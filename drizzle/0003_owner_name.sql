@@ -1,0 +1,1 @@
+ALTER TABLE `ledgers` ADD `owner_name` text;

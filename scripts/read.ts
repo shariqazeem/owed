@@ -34,7 +34,7 @@ readLedger(input)
       return Promise.all([import("../src/lib/db/ledgers"), import("../src/lib/money/rates")]).then(async ([{ createLedgerFromReading, getLedger }, { stampRate }]) => {
         const rate = await stampRate(ledger.currency);
         console.log(`  rate: 1 ${ledger.currency} = ${rate.usdcPerUnit} USDC · ${rate.source}`);
-        const { ledgerId } = createLedgerFromReading(owner ?? "dev", input.kind === "text" ? "text" : "screenshot", ledger, rate);
+        const { ledgerId } = createLedgerFromReading({ key: owner ?? "dev", name: owner ?? "dev" }, input.kind === "text" ? "text" : "screenshot", ledger, rate);
         const back = getLedger(ledgerId);
         console.log(`\n  saved ${ledgerId}: ${back?.people.length} people, ${back?.obligations.length} obligations, ${back?.events.length} event(s); first link secret ${back?.obligations[0]?.linkSecret.slice(0, 10)}…`);
       });

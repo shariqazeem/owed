@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db, schema } from "@/lib/db";
+import { ownerDisplay } from "@/lib/db/ledgers";
 
 /**
  * Telegram, the honest way. A bot cannot message a person who never opened it, so every ask carries a
@@ -42,7 +43,7 @@ export async function handleUpdate(update: { message?: { chat: { id: number }; t
     db.update(schema.people).set({ telegramChatId: chatId, channel: "telegram" }).where(eq(schema.people.id, p.id)).run();
     const base = process.env.OWED_BASE_URL ?? "http://localhost:3100";
     const amount = `${l.currency} ${(o.amountBase / 1e6).toLocaleString("en", { maximumFractionDigits: 2 })}`;
-    const reply = `Hi ${p.name}. I'm Owed, collecting for ${l.ownerKey}. This is about ${l.title}: ${amount}${o.note ? ` (${o.note})` : ""}. Your link: ${base}/pay/${o.linkSecret}\n\nReply "paid" once you have, and reply "stop" if you'd rather I never message you again.`;
+    const reply = `Hi ${p.name}. I'm Owed, collecting for ${ownerDisplay(l)}. This is about ${l.title}: ${amount}${o.note ? ` (${o.note})` : ""}. Your link: ${base}/pay/${o.linkSecret}\n\nReply "paid" once you have, and reply "stop" if you'd rather I never message you again.`;
     await sendTelegram(chatId, reply);
     db.insert(schema.messages).values({ id: `msg_${nanoid(10)}`, ledgerId: l.id, personId: p.id, direction: "out", channel: "telegram", body: reply, intent: "ask", createdAt: now() }).run();
     db.insert(schema.events).values({ ledgerId: l.id, kind: "telegram:connected", actor: "collector", detail: `${p.name} opened the bot`, createdAt: now() }).run();
@@ -76,7 +77,8 @@ export async function handleUpdate(update: { message?: { chat: { id: number }; t
       console.error("[telegram] collector reply failed:", e instanceof Error ? e.message : e);
     }
   }
-  const owner = db.select().from(schema.ledgers).where(eq(schema.ledgers.id, person.ledgerId)).get()?.ownerKey ?? "the owner";
+  const led = db.select().from(schema.ledgers).where(eq(schema.ledgers.id, person.ledgerId)).get();
+  const owner = led ? ownerDisplay(led) : "the owner";
   await sendTelegram(chatId, `Got it. I've passed that to ${owner}.`);
   return `reply: ${person.name}`;
 }

@@ -1,6 +1,6 @@
 /**
- * tokens.css — the SINGLE design-token source of truth for every Sage surface.
- * "Receipt minimalism": premium light, one terracotta accent, green/red reserved
+ * tokens.css — the SINGLE design-token source of truth for every Owed surface.
+ * Owed's look: cool paper, one cobalt accent, Manrope, green/red reserved
  * strictly for money-outcome semantics. Imported once in the root layout; every
  * per-surface stylesheet aliases its local vars to these (no palette re-declaration).
  *
@@ -16,43 +16,44 @@
   /* The inner var() fallbacks keep `font-family` valid when a next/font variable is
    * missing: a bare undefined var() invalidates the whole declaration and the browser
    * drops to serif. layout.tsx puts --font-inter / --font-jetbrains-mono on <html>. */
-  --font-sans: var(--font-inter, ui-sans-serif), system-ui, sans-serif;
+  --font-sans: var(--font-manrope, ui-sans-serif), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono, ui-monospace), SFMono-Regular, "JetBrains Mono", monospace;
 
   /* ── surface + text ─────────────────────────────────────────────── */
-  --bg: #fbfbf9;            /* paper */
-  --surface: #ffffff;      /* raised card */
-  --ink: #1a1d21;          /* primary text (app surfaces) */
+  --bg: #f4f6fb;            /* paper */
+  --surface: #ffffff;
+  --surface-2: #e9edf5;      /* raised card */
+  --ink: #0d1424;          /* primary text (app surfaces) */
   /* THE SECOND INK, named honestly. The public reading surfaces (landing, docs, long-form
    * content) run a WARMER ink than the app chrome — a deliberate P24 choice, not drift. It
    * was declared identically in three separate files; it lives here now, and those files
    * alias it, so "warm ink" has exactly one definition. */
-  --ink-warm: #171715;
-  --ink-muted: #565c64;    /* secondary text */
-  --ink-faint: #8b9098;    /* tertiary / captions */
+  --ink-warm: #0d1424;
+  --ink-muted: #4a5468;    /* secondary text */
+  --ink-faint: #8791a5;    /* tertiary / captions */
 
   /* ── brand accent (ALL interactive/brand elements) ──────────────── */
-  --accent: #c2410c;       /* terracotta */
-  --accent-soft: #fdf1ea;  /* subtle terracotta wash (hover/selected) */
+  --accent: #1e4fd8;       /* terracotta */
+  --accent-soft: #e8eefc;  /* subtle terracotta wash (hover/selected) */
   --accent-ink: #ffffff;   /* text on an accent fill */
-  --accent-strong: #9a3412;/* darker terracotta for hover / active */
+  --accent-strong: #163fb0;/* darker terracotta for hover / active */
 
   /* ── money-outcome semantics ONLY (never generic accents) ───────── */
   --ok: #15803d;           /* paid / verified / success */
-  --ok-soft: #eef6f0;
+  --ok-soft: #e7f5ec;
   --err: #dc2626;          /* rejected / failed / blocked */
   --err-soft: #fdeeee;
   --warn: #b45309;         /* caution (held-for-review, low balance) */
   --warn-soft: #fbf1e6;
   /* tinted callout rings — a shade darker than each matching *-soft fill */
-  --accent-border: #f3d7c6;
+  --accent-border: #c7d5f7;
   --ok-border: #c3e3cd;
   --err-border: #f2cccc;
   --warn-border: #ecdcb4;
 
   /* ── lines + elevation ──────────────────────────────────────────── */
-  --border: #e9e6df;
-  --border-strong: #d8d3c9;
+  --border: #e2e7f0;
+  --border-strong: #cbd3e1;
   --shadow-sm: 0 1px 2px rgba(26, 29, 33, 0.05);
   --shadow-md: 0 6px 24px rgba(26, 29, 33, 0.08);
   /* P24 — landing elevations + scrims (were raw rgba in cinematic.css; tokenized here at
@@ -65,7 +66,7 @@
   --shadow-cta-hover: 0 12px 28px -10px rgba(20, 22, 26, 0.66);
   --shadow-ok-glow: 0 12px 26px -16px rgba(21, 128, 61, 0.45);
   --shadow-on-dark: 0 12px 30px -14px rgba(0, 0, 0, 0.5);
-  --scrim-header: rgba(251, 251, 249, 0.82);
+  --scrim-header: rgba(244, 246, 251, 0.82);
 
   /* ── inverse: the one dark surface (landing close, wallet hero) ──── */
   --ink-inverse: #f3f3f1;            /* primary light text on dark */

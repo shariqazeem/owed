@@ -4,6 +4,7 @@ import { readLedger } from "@/agent/reader";
 import { createLedgerFromReading } from "@/lib/db/ledgers";
 import { stampRate } from "@/lib/money/rates";
 import { setPayoutAddress } from "@/lib/settle/settler";
+import { anonymousOwner, currentOwner, ownerCookie } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,7 +16,9 @@ export const maxDuration = 120;
  */
 export async function POST(req: Request) {
   const form = await req.formData();
-  const owner = String(form.get("owner") ?? "").trim() || "me";
+  const existing = await currentOwner();
+  const who = existing ?? anonymousOwner();
+  const owner = String(form.get("owner") ?? "").trim() || who.name || "me";
   const defaultCurrency = String(form.get("currency") ?? "USD").trim().toUpperCase();
   const caption = String(form.get("caption") ?? "").trim() || undefined;
   const text = String(form.get("text") ?? "").trim();
@@ -34,8 +37,10 @@ export async function POST(req: Request) {
   }
 
   const rate = await stampRate(reading.ledger.currency);
-  const { ledgerId } = createLedgerFromReading(owner, file instanceof File && file.size > 0 ? "screenshot" : "text", reading.ledger, rate);
-  const payoutTo = String(form.get("payoutTo") ?? "").trim();
+  const { ledgerId } = createLedgerFromReading({ key: who.key, name: owner }, file instanceof File && file.size > 0 ? "screenshot" : "text", reading.ledger, rate);
+  const payoutTo = String(form.get("payoutTo") ?? "").trim() || who.wallet || "";
   if (payoutTo) setPayoutAddress(ledgerId, payoutTo);
-  return NextResponse.redirect(absolute(`/l/${ledgerId}`, req), 303);
+  const res = NextResponse.redirect(absolute(`/l/${ledgerId}`, req), 303);
+  if (!existing) res.cookies.set(ownerCookie(who));
+  return res;
 }
