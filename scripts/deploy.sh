@@ -21,7 +21,7 @@ mkdir -p "$STAGE"
 rsync -a --delete --exclude node_modules --exclude .next --exclude var --exclude .env --exclude build.log /home/ubuntu/owed/ "$STAGE/"
 ln -sfn /home/ubuntu/owed/node_modules "$STAGE/node_modules"
 cp /home/ubuntu/owed/.env "$STAGE/.env"   # NEXT_PUBLIC_* values are inlined at build time
-(cd "$STAGE" && npm run build > build.log 2>&1) || { tail -25 "$STAGE/build.log"; echo "BUILD FAILED"; exit 1; }
+(cd "$STAGE" && OWED_TURBO_ROOT=/home/ubuntu npm run build > build.log 2>&1) || { tail -25 "$STAGE/build.log"; echo "BUILD FAILED"; exit 1; }
 tail -3 "$STAGE/build.log"
 rsync -a --delete "$STAGE/.next/" /home/ubuntu/owed/.next/
 pm2 startOrReload ecosystem.config.cjs --update-env >/dev/null
