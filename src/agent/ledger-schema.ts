@@ -15,7 +15,7 @@ export const ReadLedgerSchema = z.object({
       z.object({
         name: z.string().min(1).max(60).describe("The person's name as written in the source"),
         amount: z.number().positive().describe("What this person owes, in the ledger currency, as a number"),
-        note: z.string().max(140).nullable().describe("What it is for, in the source's own words, or null"),
+        note: z.string().max(60).nullable().describe("What it is for, in a few words the way a person would label it — 'hotel, Murree trip', 'Careem back from DHA', 'invoice #1042' — never the whole line from the source; null if the source gives nothing"),
         handle: z.string().max(120).nullable().describe("An email, phone, @handle or username if the source shows one, else null"),
         dueAt: z.string().nullable().describe("An ISO date if the source states a due date for this person, else null"),
       }),

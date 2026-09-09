@@ -1,5 +1,4 @@
-.hm { max-width: 960px; margin: 0 auto; padding: 24px 24px 80px; }
-.hm-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 48px; }
+.hm { max-width: 960px; margin: 0 auto; padding: 56px 24px 80px; }
 .hm-mark { font-weight: 700; letter-spacing: -0.01em; font-size: 18px; }
 .hm-nav { display: flex; gap: 20px; font-size: 14px; }
 .hm-nav a { color: var(--ink-muted); }
@@ -27,6 +26,7 @@
 .hm-row em { font-style: normal; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
 .hm-pill { font-style: normal; font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: var(--surface-2, #eeece6); color: var(--ink-muted); }
 .hm-pill.is-paid { background: #e6f4ea; color: #15803d; }
+.hm-msg.is-in { justify-self: end; max-width: 70%; background: var(--accent-soft); border-color: var(--accent-border); }
 .hm-msg { margin-top: 6px; padding: 12px 14px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); }
 .hm-msg-meta { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-faint); margin-bottom: 4px; }
 .hm-msg p { margin: 0; font-size: 14.5px; line-height: 1.5; }
@@ -37,6 +37,7 @@
 .hm-go-2 { margin-top: 4px; }
 .hm-foot { padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-faint); }
 .hm-foot p { margin: 0; }
+.hm-foot a { color: var(--accent); }
 @media (max-width: 720px) {
   .hm-rail, .hm-pay { grid-template-columns: 1fr; }
   .hm-row { grid-template-columns: 1fr auto; }

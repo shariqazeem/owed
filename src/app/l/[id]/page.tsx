@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLedger, ledgerMoney, ownerDisplay } from "@/lib/db/ledgers";
 import { agentAddress } from "@/lib/chain/usdc";
-import { txUrl } from "@/lib/chain/arc";
 import { canView, currentOwner } from "@/lib/auth/session";
 import { TopBar } from "@/components/topbar";
 import { Review } from "./review";
@@ -178,7 +177,7 @@ export default async function Board({ params, searchParams }: { params: Promise<
             </form>
           ) : null}
           {money.payouts.map((p) => (
-            <p className="bd-money-line" key={p.id}>paid out {usdcFmt(p.amountBase)} · <a className="bd-link" href={txUrl(p.txHash)} target="_blank" rel="noreferrer">receipt →</a></p>
+            <p className="bd-money-line" key={p.id}>paid out {usdcFmt(p.amountBase)} · <a className="bd-link" href={`/receipt/${p.txHash}`}>receipt →</a></p>
           ))}
           {err ? <p className="bd-err">{err}</p> : null}
         </section>
@@ -198,7 +197,7 @@ export default async function Board({ params, searchParams }: { params: Promise<
               return (
                 <li key={e.id}>
                   <span className="bd-actor">{e.actor}</span> {text}
-                  {tx ? <> · <a className="bd-link" href={txUrl(tx)} target="_blank" rel="noreferrer">receipt →</a></> : null}
+                  {tx ? <> · <a className="bd-link" href={`/receipt/${tx}`}>receipt →</a></> : null}
                 </li>
               );
             })}

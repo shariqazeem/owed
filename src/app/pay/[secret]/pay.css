@@ -22,3 +22,17 @@
 .py-alt summary { font-size: 13px; color: var(--ink-muted); cursor: pointer; }
 .py-alt-body { display: grid; gap: 10px; margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--border); }
 .py-go-alt { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+.pt { margin-top: 22px; }
+.pt-head { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px; }
+.pt-thread { display: grid; gap: 8px; }
+.pt-msg { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); max-width: 92%; }
+.pt-msg.is-in { justify-self: end; background: var(--accent-soft); border-color: var(--accent-border); }
+.pt-msg.is-thinking p { color: var(--ink-faint); }
+.pt-who { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); margin-bottom: 3px; }
+.pt-msg p { margin: 0; font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.pt-box { display: flex; gap: 8px; margin-top: 10px; }
+.pt-input { flex: 1; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; background: var(--surface); }
+.pt-input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.pt-send { padding: 11px 16px; border: 0; border-radius: 10px; background: var(--ink); color: #fff; font-weight: 600; cursor: pointer; }
+.pt-send:disabled { opacity: .45; cursor: default; }
+.pt-fine { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-faint); }
