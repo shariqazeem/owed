@@ -9,15 +9,20 @@
 
 ## 1. Product
 
-**Owed — "the agent that gets you paid."**
+**Owed — "the agent that gets you paid."** Web-first, by the founder's direction (9 Sep): "I wanna do
+everything from the web app… people would love to use UI." Telegram survives as an optional extra;
+nothing in the product story depends on it.
 
-Drop a bill split, a group chat or an invoice on it. The **Reader** turns it into a ledger of who owes
-the owner what. The **Collector** writes to each person in its own words with a one-time payment link
-(Telegram when they have opened the bot, otherwise a note on the owner's board to forward on WhatsApp),
-nudges up to three times, then hands the owner a decision. The payer gets a wallet from an email
-(Privy) and pays USDC on Arc in one tap. The **Settler** verifies the transfer on chain, thanks the
-payer, and pays the owner out from the agent's own wallet when the ledger is complete. The owner is
-interrupted only for a real decision: write off, escalate, dispute.
+The owner drops a bill split, a group chat or an invoice on it (`/new`). The **Reader** turns it into a
+ledger; the owner sees exactly what was read (a DRAFT), fixes a name or an amount, and presses start.
+The **Collector** then writes to each person in its own words with a one-time link, and the run
+STREAMS onto the board as it happens (`?run=ask`); every note has one-tap send (copy / WhatsApp /
+email / text) because the owner sends it from the chat they already share. The person's link
+(`/pay/[secret]`) is a page that answers their questions — they talk to the agent right there — and
+takes the payment: an email is enough to get a Privy wallet, one tap sends USDC on Arc. The **Settler**
+verifies on chain, thanks them, and pays the owner out to the wallet the owner signed in with. The
+owner is interrupted only for a real decision (write off / escalate / dispute), and a person's claim
+of having paid some other way ALWAYS becomes such a decision (code, not prompt).
 
 **The founder's direction, in his words, which override any "sensible" default:**
 - "No one cares about policies." Never frame the product around limits, policies, treasurers or
@@ -47,7 +52,8 @@ deliberately has no model.
 | **Model factory** | The one place a model is chosen. `BEDROCK_MODEL_ID` → `BedrockModel`; else OpenAI-compatible (`LLM_*` / `COMMONSTACK_*`). | `src/agent/model.ts` |
 | **Ledger** | drizzle + better-sqlite3, migrations in `drizzle/` run on first open. Tables: ledgers, people, obligations, messages, payments, decisions, events. | `src/lib/db/` |
 | **Channels** | Telegram: deep-link connect (`/start <code>`), `stop`, `paid`, free text → Collector `reply`. Webhook in prod, long-poll script in dev (only from a network that can reach api.telegram.org). | `src/lib/channels/telegram.ts`, `src/app/api/telegram/webhook/route.ts` |
-| **Web** | `/` landing · `/new` drop form · `/l/[id]` the board (pot, people, the money, decisions, messages, log) · `/pay/[secret]` the payer's page (Privy embedded wallet + paste-hash fallback). | `src/app/` |
+| **Web** | `/` landing · `/new` drop · `/l/[id]` the board (draft review → `Review`; live run → `AgentRun` over SSE `/api/ledgers/[id]/run`; one-tap send `ShareRow`; `LiveRefresh`) · `/pay/[secret]` the payer's page (`PayClient` Privy wallet + paste hash; `PayThread` talks to the agent via `/api/pay/[secret]/reply`) · `/ledgers` mine · `/receipt/[tx]` public receipt. | `src/app/` |
+| **Identity** | Privy sign-in for owners: the browser posts the token to `/api/auth/privy`, the server verifies it, sets a signed `owed_owner` cookie {key, wallet, email}; anonymous owners get an `anon:` key on first drop; boards are shown only to their owner (`canView`). The signed-in wallet is the default payout address. | `src/lib/auth/`, `src/components/owner-menu.tsx`, `topbar.tsx` |
 | **Background** | `scripts/sweep.ts` — nudge pass over collecting ledgers (pm2 cron every 4 h on the VM). | `scripts/` |
 
 Money: every stored amount is a 6-decimal integer (`amountBase`). The ledger currency is whatever the
@@ -71,12 +77,20 @@ source used; a USDC rate is stamped once per ledger with its source (`src/lib/mo
   screenshot are text.
 - **The agent wallet is bound by a Privy policy** (USDC `transfer` on Arc only, capped per transaction;
   `scripts/privy-policy.ts`, verified with `check`). Never widen it from a prompt.
+- **Nobody is messaged before the owner has reviewed the reading.** A ledger is `draft` until
+  `POST /api/ledgers/[id]/start`; the sweep and the run route only touch `collecting` ledgers.
+- **A person's claim of having paid becomes a decision** (`ensureClaimBecomesDecision` in the
+  Collector) whether or not the model called `ask_owner`.
 - **Redirects use the public origin** (`absolute()` in `src/lib/url.ts`). Behind nginx, `req.url` is
   localhost:3100.
 - **Payments go to `agentAddress()`** — the Privy server wallet when configured, the dev key otherwise.
   Never hardcode either.
 
 ---
+
+**Look.** Owed's own palette in `src/styles/tokens.css` (same token NAMES as Sage so components port,
+different VALUES): cool paper `#f4f6fb`, ink `#0d1424`, cobalt accent `#1e4fd8`, Manrope for text,
+JetBrains Mono for numbers. Green/red stay reserved for paid/failed. Never reintroduce terracotta.
 
 ## 4. Environment
 
@@ -96,6 +110,7 @@ honestly (no Privy id → paste-hash only; no Telegram token → board only).
 | `PAYER_PRIVATE_KEY` | A throwaway payer for `scripts/simulate-payer.ts`. |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_BOT_USERNAME` (`owedaibot`) / `TELEGRAM_WEBHOOK_SECRET` | The bot; the secret gates `/api/telegram/webhook` (404 without it). |
 | `OWED_NUDGE_GAP_HOURS` | Sweep gap (default 20). |
+| `OWED_SESSION_SECRET` | Signs the owner cookie (falls back to the Privy secret). |
 
 ---
 
@@ -166,16 +181,20 @@ diagram (`README.md` has the Mermaid source) and the ≤ 5 min video.
 
 ## 8. Open work, in order
 
-1. **Prove the prod loop on a phone** (founder): tap `t.me/owedaibot?start=…` for the demo ledger
-   `led_gXMjTYf3dt`, pay through the Privy wallet (fund it from the dev wallet or faucet.circle.com),
-   watch thanks + payout. Fix whatever breaks. Then the demo video (≤ 3 min for ETHGlobal, ≤ 5 for AWS).
-2. Circle Agent Stack wallet for the Settler (Arc prize) — see §7.
-3. ETHGlobal submission form: description, "how it's made", which bounties (Privy ×2, Arc Agentic),
-   video, repo, live URL.
-4. Bedrock + AgentCore once the AWS account exists; Devpost; builder.aws posts.
+1. **Prove the prod loop in the browser** (founder): sign in with an email on the live site, drop a
+   chat, review, start, watch the run; open a person's link in another browser, talk to the agent,
+   pay through the Privy wallet (fund it from the dev wallet or faucet.circle.com); watch thanks,
+   the receipt, and the payout to the signed-in wallet. Fix whatever breaks. Then the demo video
+   (≤ 3 min for ETHGlobal, ≤ 5 for AWS).
+2. ETHGlobal submission: description, "how it's made", bounties (Privy ×2 as the main target; Arc
+   Agentic as the chain it runs on), video, repo, live URL. The founder chose ONE category over
+   integrating every track: no Circle Agent Stack detour unless time is left over.
+3. Bedrock + AgentCore once the AWS account exists; Devpost; builder.aws posts.
+4. Polish where the product is watched: the board while collecting (payments landing live), the pay
+   page (a wallet with a balance and one tap), the receipt. Reuse Sage's best pieces in the new look.
 5. Safety net for payers who never report a hash: `scanIncoming` matched to unpaid obligations by
    exact amount (needs a stored block cursor — a migration).
-6. Owner notifications (the owner's own Telegram), an email channel, a real domain.
+6. Owner notifications, an email channel, a real domain. Sage-on-Arc is PARKED until after 16 Sep.
 
 ---
 
